@@ -1,10 +1,8 @@
 # UR10 Pick & Place — ROS 2 + MoveIt 2 + Gazebo
 
-<p align="center">
-  <img src="docs/demo.gif" alt="Pick and Place Demo" width="600">
-  <br>
-  <em>(Demo GIF placeholder — replace with actual recording)</em>
-</p>
+
+https://github.com/user-attachments/assets/4fa2fe6e-c409-4239-b822-74dba1059c0f
+
 
 A simulated industrial pick-and-place cell built from scratch in ROS 2, featuring a Universal Robots UR10 arm, a Robotiq 2F-85 parallel gripper, motion planning with collision avoidance, and a full Gazebo simulation environment.
 
