@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ur10_cell">
+
+  <xacro:arg name="use_sim" default="true"/>
+
+  <xacro:include filename="$(find ur_description)/urdf/ur_macro.xacro"/>
+  <xacro:include filename="$(find robotiq_description)/urdf/ur_to_robotiq_adapter.urdf.xacro"/>
+  <xacro:include filename="$(find robotiq_description)/urdf/robotiq_2f_85_macro.urdf.xacro"/>
+
+  <link name="world"/>
+
+  <xacro:ur_robot
+    name="ur10"
+    tf_prefix=""
+    parent="world"
+    joint_limits_parameters_file="$(find ur_description)/config/ur10/joint_limits.yaml"
+    kinematics_parameters_file="$(find ur_description)/config/ur10/default_kinematics.yaml"
+    physical_parameters_file="$(find ur_description)/config/ur10/physical_parameters.yaml"
+    visual_parameters_file="$(find ur_description)/config/ur10/visual_parameters.yaml"
+    use_fake_hardware="false"
+    sim_gazebo="true">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:ur_robot>
+
+  <xacro:ur_to_robotiq prefix="" connected_to="tool0" rotation="0"/>
+
+  <xacro:robotiq_gripper
+    name="RobotiqGripperHardwareInterface"
+    prefix=""
+    parent="gripper_mount_link"
+    sim_ignition="false"
+    use_fake_hardware="false"
+    include_ros2_control="false">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:robotiq_gripper>
+
+  <ros2_control name="gripper_system" type="system">
+    <hardware>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+    </hardware>
+    <joint name="robotiq_85_left_knuckle_joint">
+      <command_interface name="position"/>
+      <state_interface name="position">
+        <param name="initial_value">0.0</param>
+      </state_interface>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+  <gazebo>
+    <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
+      <parameters>$(find ur10_pick_place)/config/controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+  <link name="table">
+    <visual>
+      <geometry>
+        <box size="1.0 1.0 0.05"/>
+      </geometry>
+      <material name="brown">
+        <color rgba="0.6 0.4 0.2 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="1.0 1.0 0.05"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="10.0"/>
+      <inertia ixx="0.1" ixy="0" ixz="0" iyy="0.1" iyz="0" izz="0.1"/>
+    </inertial>
+  </link>
+
+  <joint name="table_joint" type="fixed">
+    <parent link="world"/>
+    <child link="table"/>
+    <origin xyz="0.9 0 0.35" rpy="0 0 0"/>
+  </joint>
+
+  <gazebo>
+    <plugin filename="libroboticsgroup_upatras_gazebo_mimic_joint_plugin.so" name="mimic_robotiq_85_1">
+      <joint>robotiq_85_left_knuckle_joint</joint>
+      <mimicJoint>robotiq_85_right_knuckle_joint</mimicJoint>
+      <multiplier>-1.0</multiplier>
+      <offset>0.0</offset>
+      <maxEffort>1000.0</maxEffort> </plugin>
+    <plugin filename="libroboticsgroup_upatras_gazebo_mimic_joint_plugin.so" name="mimic_robotiq_85_2">
+      <joint>robotiq_85_left_knuckle_joint</joint>
+      <mimicJoint>robotiq_85_left_inner_knuckle_joint</mimicJoint>
+      <multiplier>1.0</multiplier>
+      <offset>0.0</offset>
+      <maxEffort>1000.0</maxEffort> </plugin>
+    <plugin filename="libroboticsgroup_upatras_gazebo_mimic_joint_plugin.so" name="mimic_robotiq_85_3">
+      <joint>robotiq_85_left_knuckle_joint</joint>
+      <mimicJoint>robotiq_85_right_inner_knuckle_joint</mimicJoint>
+      <multiplier>-1.0</multiplier>
+      <offset>0.0</offset>
+      <maxEffort>1000.0</maxEffort> </plugin>
+    <plugin filename="libroboticsgroup_upatras_gazebo_mimic_joint_plugin.so" name="mimic_robotiq_85_4">
+      <joint>robotiq_85_left_knuckle_joint</joint>
+      <mimicJoint>robotiq_85_left_finger_tip_joint</mimicJoint>
+      <multiplier>-1.0</multiplier>
+      <offset>0.0</offset>
+      <maxEffort>1000.0</maxEffort> </plugin>
+    <plugin filename="libroboticsgroup_upatras_gazebo_mimic_joint_plugin.so" name="mimic_robotiq_85_5">
+      <joint>robotiq_85_left_knuckle_joint</joint>
+      <mimicJoint>robotiq_85_right_finger_tip_joint</mimicJoint>
+      <multiplier>1.0</multiplier>
+      <offset>0.0</offset>
+      <maxEffort>1000.0</maxEffort> </plugin>
+  </gazebo>
+
+</robot>
